@@ -1,6 +1,5 @@
 import cv2
 import os
-import re
 
 import numpy as np
 from PIL import Image
@@ -9,8 +8,12 @@ import timm
 import torch
 import torchvision.transforms as transforms
 
-from dicts import edward, vibrio, strepto, tenaci, entero, miamien, vhsv, diseases
-from symptom import GillSymptom, LiverSymptom, GillCoverSymptom, IntestineSymptom, AscitesSymptom, FRSymptom, RSSymptom
+from diseases import edward, vibrio, strepto, tenaci, entero, \
+    miamien, vhsv, diseases, init_diseases
+from symptom import GillSymptom, LiverSymptom, GillCoverSymptom, \
+    IntestineSymptom, AscitesSymptom, FRSymptom, RSSymptom
+
+fish_img_dir = '/media/lifeisbug/hdd/fish/fish_data/flexink_8+9/images/'
 
 
 def segmentation(model, image):
@@ -311,6 +314,9 @@ def compare(pred_gill,
 
 
 def final_predict(fish):
+
+    init_diseases()
+    
     image_eye_0 = cv2.imread(fish + "_01.JPG", cv2.IMREAD_UNCHANGED)
     image_eyeless_0 = cv2.imread(fish + "_06.JPG", cv2.IMREAD_UNCHANGED)
 
@@ -371,5 +377,8 @@ def final_predict(fish):
 
 
 if __name__ == '__main__':
-    fish = input('개체번호 입력')
-    final_predict(fish)
+    
+    model_dir = ''
+    print(os.getcwd())
+    fish_num = input('개체번호 입력 : ')
+    final_predict(fish_img_dir + fish_num)
