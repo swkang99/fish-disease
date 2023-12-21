@@ -13,16 +13,20 @@ from diseases import edward, vibrio, strepto, tenaci, entero, \
 from symptom import GillSymptom, LiverSymptom, GillCoverSymptom, \
     IntestineSymptom, AscitesSymptom, FRSymptom, RSSymptom
 
-fish_img_dir = '/media/lifeisbug/hdd/fish/fish_data/flexink_8+9/images/'
-
+fish_img_path = '/media/lifeisbug/hdd/fish/fish_data/flexink_8+9/images/'
+model_path = 'final_predict/weights/'
 
 def segmentation(model, image):
     # GPU 사용 가능 여부 확인
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    model = model.to(device)
+    #device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    #model = model.to(device)
 
     segmentation_results = model.predict(image)
+
     masks = segmentation_results[0].masks
+
+    if masks is None:
+        return None
 
     # 주어진 마스크 텐서 값
     mask_tensor = masks.data
@@ -52,8 +56,8 @@ def segmentation(model, image):
 
 def detection(model, image):
     # GPU 사용 가능 여부 확인
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    model = model.to(device)
+    #device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    #model = model.to(device)
 
     preds = model(image)
     cls_cnt = [0, 0, 0, 0, 0, 0, 0]  # 각 클래스가 검출된 개수
@@ -96,12 +100,14 @@ def set_symptom_in_disease(symptom_type, *args):
         target_disease.append(arg)
 
     for disease in diseases:
-        for symptoms in disease.keys:
-            if target_disease is None and symptom_type in symptoms:
+        for symptoms in disease.keys():
+            if not target_disease and symptom_type in symptoms:
                 disease[symptoms] = True
 
-            elif target_disease in symptoms and symptom_type in symptoms:
-                disease[symptoms] = True
+            else:
+                for target in target_disease:
+                    if target in symptoms and symptom_type in symptoms:
+                        disease[symptoms] = True
 
 
 def compare(pred_gill,
@@ -114,132 +120,132 @@ def compare(pred_gill,
 
     symptom = []
 
-    if pred_gill == GillSymptom.PANMY:
+    if pred_gill == GillSymptom.PANMY.value:
         print("아가미 이미지는 빈혈 아가미 클래스로 예측됩니다.")
         symptom.append('아가미 빈혈')
         set_symptom_in_disease('아가미')
-    elif pred_gill == GillSymptom.NORMAL:
+    elif pred_gill == GillSymptom.NORMAL.value:
         print('아가미 이미지는 정상 아가미 클래스로 예측됩니다.')
 
-    if pred_liver == LiverSymptom.CONGEST:
+    if pred_liver == LiverSymptom.CONGEST.value:
         print("간 이미지는 울혈 클래스로 예측됩니다.")
         symptom.append('간 울혈')
         set_symptom_in_disease('간', '비브리오', '연쇄구균', '바이러스성')
-    elif pred_liver == LiverSymptom.NORMAL:
+    elif pred_liver == LiverSymptom.NORMAL.value:
         print("간 이미지는 정상 클래스로 예측됩니다.")
-    elif pred_liver == LiverSymptom.INFLAM:
+    elif pred_liver == LiverSymptom.INFLAM.value:
         print("간 이미지는 염증 클래스로 예측됩니다.")
         symptom.append('간 염증')
         set_symptom_in_disease('간', '비브리오')
-    elif pred_liver == LiverSymptom.PANMY:
+    elif pred_liver == LiverSymptom.PANMY.value:
         print("간 이미지는 빈혈 클래스로 예측됩니다.")
         symptom.append('간 빈혈')
         set_symptom_in_disease('간', '에드워드', '연쇄구균')
 
-    if pred_gill_cover == GillCoverSymptom.NORMAL:
+    if pred_gill_cover == GillCoverSymptom.NORMAL.value:
         print("아가미 뚜껑 이미지는 정상 클래스로 예측됩니다.")
-    elif pred_gill_cover == GillCoverSymptom.HEMORR:
+    elif pred_gill_cover == GillCoverSymptom.HEMORR.value:
         print("아가미 뚜껑 이미지는 염증 및 출혈 클래스로 예측됩니다.")
         symptom.append('아가미뚜껑 염증 및 출혈')
         set_symptom_in_disease('아가미뚜껑', '연쇄구균')
 
-    if pred_intestine == IntestineSymptom.COMPOUND:
+    if pred_intestine == IntestineSymptom.COMPOUND.value:
         print("장 이미지는 염증 및 출혈 클래스로 예측됩니다.")
         symptom.append('장 염증 및 출혈')
         set_symptom_in_disease('장', '에드워드', '연쇄구균')
-    elif pred_intestine == IntestineSymptom.NORMAL:
+    elif pred_intestine == IntestineSymptom.NORMAL.value:
         print("장 이미지는 정상 클래스로 예측됩니다.")
 
-    if pred_ascites == AscitesSymptom.NORMAL:
+    if pred_ascites == AscitesSymptom.NORMAL.value:
         print("복수 이미지는 정상 클래스로 예측됩니다.")
-    elif pred_ascites == AscitesSymptom.HEMORR:
+    elif pred_ascites == AscitesSymptom.HEMORR.value:
         print("복수 이미지는 출혈성 복수 클래스로 예측됩니다.")
         symptom.append('출혈성 복수')
         set_symptom_in_disease('복수', '에드워드', '연쇄구균')
-    elif pred_ascites == AscitesSymptom.CLEAN:
+    elif pred_ascites == AscitesSymptom.CLEAN.value:
         print("복수 이미지는 맑은 복수 클래스로 예측됩니다.")
         symptom.append('맑은 복수')
         set_symptom_in_disease('복수', '바이러스성')
 
-    if pred_eye_90[FRSymptom.DYH] > 0:
+    if pred_eye_90[FRSymptom.DYH.value] > 0:
         detected = '체표 출혈'
         print(f"유안측 이미지에서 {detected}이 발견됩니다.")
         symptom.append(detected)
         set_symptom_in_disease('체표', '비브리오', '연쇄구균')
 
-    if pred_eye_90[FRSymptom.DYU] > 0:
+    if pred_eye_90[FRSymptom.DYU.value] > 0:
         detected = '체표 궤양'
         print(f"유안측 이미지에서 {detected}이 발견됩니다.")
         symptom.append(detected)
         set_symptom_in_disease('체표', '비브리오')
 
-    if pred_eye_90[FRSymptom.DYA] > 0:
+    if pred_eye_90[FRSymptom.DYA.value] > 0:
         detected = '체표 근육 출혈'
         print(f"유안측 이미지에서 {detected}이 발견됩니다.")
         symptom.append(detected)
         set_symptom_in_disease('체표', '에드워드')
 
-    if pred_eye_90[FRSymptom.FDH] > 0:
+    if pred_eye_90[FRSymptom.FDH.value] > 0:
         detected = '등지느러미 출혈'
         print(f"유안측 이미지에서 {detected}이 발견됩니다.")
         symptom.append(detected)
         set_symptom_in_disease('체표', '비브리오', '연쇄구균', '스쿠티카')
 
-    if pred_eye_90[FRSymptom.FAH] > 0:
+    if pred_eye_90[FRSymptom.FAH.value] > 0:
         detected = '뒷지느러미 출혈'
         print(f"유안측 이미지에서 {detected}이 발견됩니다.")
         symptom.append(detected)
         set_symptom_in_disease('체표', '비브리오', '연쇄구균', '스쿠티카')
 
-    if pred_eye_90[FRSymptom.FCH] > 0:
+    if pred_eye_90[FRSymptom.FCH.value] > 0:
         detected = '꼬리지느러미 출혈'
         print(f"유안측 이미지에서 {detected}이 발견됩니다.")
         symptom.append(detected)
         set_symptom_in_disease('체표', '비브리오', '연쇄구균', '스쿠티카')
 
-    if pred_eye_90[FRSymptom.MOU] > 0:
+    if pred_eye_90[FRSymptom.MOU.value] > 0:
         detected = '주둥이 궤양'
         print(f"유안측 이미지에서 {detected}이 발견됩니다.")
         symptom.append(detected)
         set_symptom_in_disease('체표', '비브리오', '활주세균', '스쿠티카')
 
-    if pred_eyeless_90[RSSymptom.DYH] > 0:
+    if pred_eyeless_90[RSSymptom.DYH.value] > 0:
         detected = '체표 출혈'
         print(f"무안측 이미지에서 {detected}이 발견됩니다.")
         symptom.append(detected)
         set_symptom_in_disease('체표', '비브리오', '연쇄구균')
 
-    if pred_eyeless_90[RSSymptom.DYU] > 0:
+    if pred_eyeless_90[RSSymptom.DYU.value] > 0:
         detected = '체표 궤양'
         print(f"무안측 이미지에서 {detected}이 발견됩니다.")
         symptom.append(detected)
         set_symptom_in_disease('체표', '비브리오')
 
-    if pred_eyeless_90[RSSymptom.DYA] > 0:
+    if pred_eyeless_90[RSSymptom.DYA.value] > 0:
         detected = '체표 근육 출혈'
         print(f"무안측 이미지에서 {detected}이 발견됩니다.")
         symptom.append(detected)
         set_symptom_in_disease('체표', '에드워드')
 
-    if pred_eyeless_90[RSSymptom.FDH] > 0:
+    if pred_eyeless_90[RSSymptom.FDH.value] > 0:
         detected = '등지느러미 출혈'
         print(f"무안측 이미지에서 {detected}이 발견됩니다.")
         symptom.append(detected)
         set_symptom_in_disease('체표', '비브리오', '연쇄구균', '스쿠티카')
 
-    if pred_eyeless_90[RSSymptom.FAH] > 0:
+    if pred_eyeless_90[RSSymptom.FAH.value] > 0:
         detected = '뒷지느러미 출혈'
         print(f"무안측 이미지에서 {detected}이 발견됩니다.")
         symptom.append(detected)
         set_symptom_in_disease('체표', '비브리오', '연쇄구균', '스쿠티카')
 
-    if pred_eyeless_90[RSSymptom.FCH] > 0:
+    if pred_eyeless_90[RSSymptom.FCH.value] > 0:
         detected = '꼬리지느러미 출혈'
         print(f"무안측 이미지에서 {detected}이 발견됩니다.")
         symptom.append(detected)
         set_symptom_in_disease('체표', '비브리오', '연쇄구균', '스쿠티카')
 
-    if pred_eyeless_90[RSSymptom.MOU] > 0:
+    if pred_eyeless_90[RSSymptom.MOU.value] > 0:
         detected = '주둥이 궤양'
         print(f"무안측 이미지에서 {detected}이 발견됩니다.")
         symptom.append(detected)
@@ -305,10 +311,10 @@ def compare(pred_gill,
     # 상위 3개 값을 출력
     if sorted_sympton[0][1] < 20:
         print("해당 넙치는 정상으로 예측됩니다.")
-        return ['정상']
+        return [('정상', 0)]
     else:
         top_3_symptoms = sorted_sympton[:3]
-        for num, symptom, value in enumerate(top_3_symptoms, start=1):
+        for num, (symptom, value) in enumerate(top_3_symptoms, start=1):
             print(f"{num} : {symptom} , {value}%")
         return top_3_symptoms
 
@@ -327,35 +333,35 @@ def final_predict(fish):
     image_gill_cover = cv2.imread(fish + "_13.JPG", cv2.IMREAD_UNCHANGED)
     image_intest_ascites = cv2.imread(fish + "_15.JPG", cv2.IMREAD_UNCHANGED)
 
-    # model_eye_det_0 = YOLO('weights/det/eye_0_best.pt')
-    # model_eyeless_det_0 = YOLO('weights/det/eyeless_0_best.pt')
-    model_eye_det_45_90 = YOLO('weights/det/eye_45_90_best.pt')
-    model_eyeless_det_45_90 = YOLO('weights/det/eyeless_45_90_best.pt')
+    # model_eye_det_0 = YOLO(model_path + 'det/eye_0_best.pt')
+    # model_eyeless_det_0 = YOLO(model_path + 'det/eyeless_0_best.pt')
+    model_eye_det_45_90 = YOLO(model_path + 'det/eye_45_90_best.pt')
+    model_eyeless_det_45_90 = YOLO(model_path + 'det/eyeless_45_90_best.pt')
 
-    model_gill_seg = YOLO('weights/seg/gill_best.pt')
-    model_liver_seg = YOLO('weights/seg/liver_best.pt')
-    model_gill_cover_seg = YOLO('weights/seg/gill_cover_best.pt')
-    model_intestine_seg = YOLO('weights/seg/intestine_best.pt')
-    model_ascites_seg = YOLO('weights/seg/ascites_best.pt')
+    model_gill_seg = YOLO(model_path + 'seg/gill_best.pt')
+    model_liver_seg = YOLO(model_path + 'seg/liver_best.pt')
+    model_gill_cover_seg = YOLO(model_path + 'seg/gill_cover_best.pt')
+    model_intestine_seg = YOLO(model_path + 'seg/intestine_best.pt')
+    model_ascites_seg = YOLO(model_path + 'seg/ascites_best.pt')
 
     model_gill_cls = timm.create_model('coatnet_2_rw_224', pretrained=False, num_classes=2)
-    model_gill_cls.load_state_dict(torch.load('weights/cls/2gill3-c2-f2.pth'))
+    model_gill_cls.load_state_dict(torch.load(model_path + 'cls/2gill3-c2-f2.pth'))
     model_gill_cls.eval()
 
     model_liver_cls = timm.create_model('efficientnetv2_rw_s', pretrained=False, num_classes=4)
-    model_liver_cls.load_state_dict(torch.load('weights/cls/liver4-ev2s-f2.pth'))
+    model_liver_cls.load_state_dict(torch.load(model_path + 'cls/liver4-ev2s-f2.pth'))
     model_liver_cls.eval()
 
     model_gill_cover_cls = timm.create_model('efficientnetv2_rw_m', pretrained=False, num_classes=2)
-    model_gill_cover_cls.load_state_dict(torch.load('weights/cls/gillcap-ev2m-f1.pth'))
+    model_gill_cover_cls.load_state_dict(torch.load(model_path + 'cls/gillcap-ev2m-f1.pth'))
     model_gill_cover_cls.eval()
 
     model_ascites_cls = timm.create_model('dm_nfnet_f1', pretrained=False, num_classes=3)
-    model_ascites_cls.load_state_dict(torch.load('weights/cls/guts2-n1-f5.pth'))
+    model_ascites_cls.load_state_dict(torch.load(model_path + 'cls/guts2-n1-f5.pth'))
     model_ascites_cls.eval()
 
     model_intestine_cls = timm.create_model('coatnet_0_rw_224', pretrained=False, num_classes=2)
-    model_intestine_cls.load_state_dict(torch.load('weights/cls/organ-c0-f2.pth'))
+    model_intestine_cls.load_state_dict(torch.load(model_path + 'cls/organ-c0-f2.pth'))
     model_intestine_cls.eval()
 
     org_gill = segmentation(model_gill_seg, image_gill_liver)
@@ -367,18 +373,34 @@ def final_predict(fish):
     pred_eye_90 = detection(model_eye_det_45_90, image_eye_90)
     pred_eyeless_90 = detection(model_eyeless_det_45_90, image_eyeless_90)
 
-    pred_gill = classification(model_gill_cls, org_gill)
-    pred_liver = classification(model_liver_cls, org_liver)
-    pred_gill_cover = classification(model_gill_cover_cls, org_gill_cover)
-    pred_intestine = classification(model_intestine_cls, org_intestine)
-    pred_ascites = classification(model_ascites_cls, org_ascites)
+    if org_gill is not None:
+        pred_gill = classification(model_gill_cls, org_gill)
+    else:
+        pred_gill = -1
+
+    if org_liver is not None: 
+        pred_liver = classification(model_liver_cls, org_liver)
+    else:
+        pred_liver = -1
+    
+    if org_gill_cover is not None:
+        pred_gill_cover = classification(model_gill_cover_cls, org_gill_cover)
+    else:
+        pred_gill_cover = -1
+    
+    if org_intestine is not None:
+        pred_intestine = classification(model_intestine_cls, org_intestine)
+    else:
+        pred_intestine = -1
+    
+    if org_ascites is not None:        
+        pred_ascites = classification(model_ascites_cls, org_ascites)
+    else:
+        pred_ascites = -1
 
     return compare(pred_gill, pred_liver, pred_gill_cover, pred_intestine, pred_ascites, pred_eye_90, pred_eyeless_90)
 
 
 if __name__ == '__main__':
-    
-    model_dir = ''
-    print(os.getcwd())
     fish_num = input('개체번호 입력 : ')
-    final_predict(fish_img_dir + fish_num)
+    final_predict(fish_img_path + fish_num)

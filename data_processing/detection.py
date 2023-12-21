@@ -302,7 +302,8 @@ def get_box(data_img, data_ann, data_cls, data_dir):
             if code[:2] == 'PO': # 정상 라벨 제외
                 continue
             elif code.find('OUY') != -1: #or code.find('OUN') != -1: # 외형 라벨, 크롭 기준
-                category = -1
+                # category = -1
+                continue
             elif code not in class_code.keys():
                 print(code)
                 continue
@@ -350,7 +351,7 @@ def get_box(data_img, data_ann, data_cls, data_dir):
             with open(txt_path, 'a') as f:
                 f.write(content)
             
-            if img_name.lower().endswith(".jpeg"):
+            if img_name.lower().endswith(".jpeg") or img_name.lower().endswith(".jpg"):
                 img_name = img_name.split('.')[0] + '.JPG'
                 
             # 학습에 사용할 이미지 복사
@@ -522,7 +523,7 @@ def augmentation(dir):
         if bboxes:
             transformed = augment_crop(image, bboxes, category_ids, crop_region)
     
-        cv2.imwrite(img_save_path + img[:-4] + ".jpg", transformed["image"])
+        cv2.imwrite(img_save_path + img[:-4] + ".JPG", transformed["image"])
     
         with open(label_save_path + img[:-4] + ".txt", 'a') as fi:
             for i in range(len(transformed["bboxes"])):

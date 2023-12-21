@@ -69,5 +69,5 @@ diseases = [edward, vibrio, strepto, tenaci, entero, miamien, vhsv]
 
 def init_diseases():
     for disease in diseases:
-        for key in disease.keys:
+        for key in disease.keys():
             disease[key] = False
