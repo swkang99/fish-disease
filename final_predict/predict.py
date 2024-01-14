@@ -8,7 +8,7 @@ import timm
 import torch
 import torchvision.transforms as transforms
 
-from diseases import edward, vibrio, strepto, tenaci, entero, \
+from diseases import edward, vibrio, strepto, tenaci, \
     miamien, vhsv, diseases, init_diseases
 from symptom import GillSymptom, LiverSymptom, GillCoverSymptom, \
     IntestineSymptom, AscitesSymptom, FRSymptom, RSSymptom
@@ -119,7 +119,7 @@ def compare(pred_gill,
             pred_eyeless_90):
 
     symptom = []
-
+    print("\n============================== 2. 증상 예측 ====================================")
     if pred_gill == GillSymptom.PANMY.value:
         print("아가미 이미지는 빈혈 아가미 클래스로 예측됩니다.")
         symptom.append('아가미 빈혈')
@@ -173,17 +173,17 @@ def compare(pred_gill,
         symptom.append(detected)
         set_symptom_in_disease('체표', '비브리오', '연쇄구균')
 
-    if pred_eye_90[FRSymptom.DYU.value] > 0:
-        detected = '체표 궤양'
-        print(f"유안측 이미지에서 {detected}이 발견됩니다.")
-        symptom.append(detected)
-        set_symptom_in_disease('체표', '비브리오')
+    # if pred_eye_90[FRSymptom.DYU.value] > 0:
+    #     detected = '체표 궤양'
+    #     print(f"유안측 이미지에서 {detected}이 발견됩니다.")
+    #     symptom.append(detected)
+    #     set_symptom_in_disease('체표', '비브리오')
 
-    if pred_eye_90[FRSymptom.DYA.value] > 0:
-        detected = '체표 근육 출혈'
-        print(f"유안측 이미지에서 {detected}이 발견됩니다.")
-        symptom.append(detected)
-        set_symptom_in_disease('체표', '에드워드')
+    # if pred_eye_90[FRSymptom.DYA.value] > 0:
+    #     detected = '체표 근육 출혈'
+    #     print(f"유안측 이미지에서 {detected}이 발견됩니다.")
+    #     symptom.append(detected)
+    #     set_symptom_in_disease('체표', '에드워드')
 
     if pred_eye_90[FRSymptom.FDH.value] > 0:
         detected = '등지느러미 출혈'
@@ -203,11 +203,11 @@ def compare(pred_gill,
         symptom.append(detected)
         set_symptom_in_disease('체표', '비브리오', '연쇄구균', '스쿠티카')
 
-    if pred_eye_90[FRSymptom.MOU.value] > 0:
-        detected = '주둥이 궤양'
-        print(f"유안측 이미지에서 {detected}이 발견됩니다.")
-        symptom.append(detected)
-        set_symptom_in_disease('체표', '비브리오', '활주세균', '스쿠티카')
+    # if pred_eye_90[FRSymptom.MOU.value] > 0:
+    #     detected = '주둥이 궤양'
+    #     print(f"유안측 이미지에서 {detected}이 발견됩니다.")
+    #     symptom.append(detected)
+    #     set_symptom_in_disease('체표', '비브리오', '활주세균', '스쿠티카')
 
     if pred_eyeless_90[RSSymptom.DYH.value] > 0:
         detected = '체표 출혈'
@@ -215,17 +215,17 @@ def compare(pred_gill,
         symptom.append(detected)
         set_symptom_in_disease('체표', '비브리오', '연쇄구균')
 
-    if pred_eyeless_90[RSSymptom.DYU.value] > 0:
-        detected = '체표 궤양'
-        print(f"무안측 이미지에서 {detected}이 발견됩니다.")
-        symptom.append(detected)
-        set_symptom_in_disease('체표', '비브리오')
+    # if pred_eyeless_90[RSSymptom.DYU.value] > 0:
+    #     detected = '체표 궤양'
+    #     print(f"무안측 이미지에서 {detected}이 발견됩니다.")
+    #     symptom.append(detected)
+    #     set_symptom_in_disease('체표', '비브리오')
 
-    if pred_eyeless_90[RSSymptom.DYA.value] > 0:
-        detected = '체표 근육 출혈'
-        print(f"무안측 이미지에서 {detected}이 발견됩니다.")
-        symptom.append(detected)
-        set_symptom_in_disease('체표', '에드워드')
+    # if pred_eyeless_90[RSSymptom.DYA.value] > 0:
+    #     detected = '체표 근육 출혈'
+    #     print(f"무안측 이미지에서 {detected}이 발견됩니다.")
+    #     symptom.append(detected)
+    #     set_symptom_in_disease('체표', '에드워드')
 
     if pred_eyeless_90[RSSymptom.FDH.value] > 0:
         detected = '등지느러미 출혈'
@@ -245,78 +245,84 @@ def compare(pred_gill,
         symptom.append(detected)
         set_symptom_in_disease('체표', '비브리오', '연쇄구균', '스쿠티카')
 
-    if pred_eyeless_90[RSSymptom.MOU.value] > 0:
-        detected = '주둥이 궤양'
-        print(f"무안측 이미지에서 {detected}이 발견됩니다.")
-        symptom.append(detected)
-        set_symptom_in_disease('체표', '비브리오', '활주세균', '스쿠티카')
-
+    # if pred_eyeless_90[RSSymptom.MOU.value] > 0:
+    #     detected = '주둥이 궤양'
+    #     print(f"무안측 이미지에서 {detected}이 발견됩니다.")
+    #     symptom.append(detected)
+    #     set_symptom_in_disease('체표', '비브리오', '활주세균', '스쿠티카')
+    print("\n============================== 3. 질병 별 증상 비율 계산 ====================================")
     print(edward)
     edward_count = sum(value for value in edward.values() if value)
     print("에드워드증상개수:", edward_count)
     edward_symptom_rate = round((edward_count / len(edward) * 100), 2)
-    print(f"에드워드증상/전체증상: {edward_symptom_rate}%", end='\n')
+    print(f"에드워드증상/전체증상 -> {edward_count} / {len(edward)} = {edward_symptom_rate}%", end='\n')
 
     print(vibrio)
     vibrio_count = sum(value for value in vibrio.values() if value)
     print("비브리오증상개수:", vibrio_count)
     vibrio_symptom_rate = round((vibrio_count / len(vibrio) * 100), 2)
-    print(f"비브리오증상/전체증상: {vibrio_symptom_rate}%", end='\n')
+    print(f"비브리오증상/전체증상 -> {vibrio_count} / {len(vibrio)} = {vibrio_symptom_rate}%", end='\n')
 
     print(strepto)
     strepto_count = sum(value for value in strepto.values() if value)
     print("연쇄구균증상개수:", strepto_count)
     strepto_symptom_rate = round((strepto_count / len(strepto) * 100), 2)
-    print(f"연쇄구균증상/전체증상: {strepto_symptom_rate}%", end='\n')
+    print(f"연쇄구균증상/전체증상 -> {strepto_count} / {len(strepto)} = {strepto_symptom_rate}%", end='\n')
 
     print(tenaci)
     tenaci_count = sum(value for value in tenaci.values() if value)
     print("활주세균증상개수:", tenaci_count)
     tenaci_symptom_rate = round((tenaci_count / len(tenaci) * 100), 2)
-    print(f"활주세균증상/전체증상: {tenaci_symptom_rate}%", end='\n')
+    print(f"활주세균증상/전체증상 -> {tenaci_count} / {len(tenaci)} = {tenaci_symptom_rate}%", end='\n')
 
-    print(entero)
-    entero_count = sum(value for value in entero.values() if value)
-    print("여윔증증상개수:", entero_count)
-    entero_symptom_rate = round((entero_count / len(entero) * 100), 2)
-    print(f"여윔증증상/전체증상: {entero_symptom_rate}%", end='\n')
+    # print(entero)
+    # entero_count = sum(value for value in entero.values() if value)
+    # print("여윔증증상개수:", entero_count)
+    # entero_symptom_rate = round((entero_count / len(entero) * 100), 2)
+    # print(f"여윔증증상/전체증상 -> {entero_count} / {len(entero)} = {entero_symptom_rate}%", end='\n')
 
     print(miamien)
     miamien_count = sum(value for value in miamien.values() if value)
     print("스쿠티카증상개수:", miamien_count)
     miamien_symptom_rate = round((miamien_count / len(miamien) * 100), 2)
-    print(f"스쿠티카증상/전체증상: {miamien_symptom_rate}%", end='\n')
+    print(f"스쿠티카증상/전체증상 -> {miamien_count} / {len(miamien)} = {miamien_symptom_rate}%", end='\n')
 
     print(vhsv)
     vhsv_count = sum(value for value in vhsv.values() if value)
     print("바이러스성출혈성패혈증증상개수:", vhsv_count)
     vhsv_symptom_rate = round((vhsv_count / len(vhsv) * 100), 2)
-    print(f"바이러스성출혈성패혈증증상/전체증상: {vhsv_symptom_rate}%", end='\n')
+    print(f"바이러스성출혈성패혈증증상/전체증상 -> {vhsv_count} / {len(vhsv)} = {vhsv_symptom_rate}%", end='\n')
 
     symptom_rate = {
         '에드워드': edward_symptom_rate,
         '비브리오': vibrio_symptom_rate,
         '연쇄구균': strepto_symptom_rate,
         '활주세균': tenaci_symptom_rate,
-        '여윔증': entero_symptom_rate,
+        # '여윔증': entero_symptom_rate,
         '스쿠티카': miamien_symptom_rate,
         "바이러스성출혈성패혈증": vhsv_symptom_rate
     }
-
+    print("\n============================== 4. 최종 질병 예측 ====================================")
     print(f"발견된 증상 : {symptom}")
 
     # 딕셔너리를 값에 따라 내림차순으로 정렬
     sorted_sympton = sorted(symptom_rate.items(), key=lambda x: x[1], reverse=True)
     
+    keys_to_remove = [key for key, value in symptom_rate.items() if value == 0.0]
+
+    for key in keys_to_remove:
+        del symptom_rate[key]
+
+    normal_threshold = 10
     # 상위 3개 값을 출력
-    if sorted_sympton[0][1] < 20:
+    if sorted_sympton[0][1] < normal_threshold:
         print("해당 넙치는 정상으로 예측됩니다.")
-        return [('정상', 0)]
+        return symptom,[('정상', 0)]
     else:
         top_3_symptoms = sorted_sympton[:3]
         for num, (symptom, value) in enumerate(top_3_symptoms, start=1):
             print(f"{num} : {symptom} , {value}%")
-        return top_3_symptoms
+        return symptom,top_3_symptoms
 
 
 def final_predict(fish):
@@ -364,6 +370,8 @@ def final_predict(fish):
     model_intestine_cls.load_state_dict(torch.load(model_path + 'cls/organ-c0-f2.pth'))
     model_intestine_cls.eval()
 
+    print("\n============================== 1. 장기 추출 ====================================")
+
     org_gill = segmentation(model_gill_seg, image_gill_liver)
     org_liver = segmentation(model_liver_seg, image_gill_liver)
     org_gill_cover = segmentation(model_gill_cover_seg, image_gill_cover)
@@ -376,26 +384,31 @@ def final_predict(fish):
     if org_gill is not None:
         pred_gill = classification(model_gill_cls, org_gill)
     else:
+        print("아가미 추출 실패: 모델 출력 없음")
         pred_gill = -1
 
     if org_liver is not None: 
         pred_liver = classification(model_liver_cls, org_liver)
     else:
+        print("간 추출 실패: 모델 출력 없음")
         pred_liver = -1
     
     if org_gill_cover is not None:
         pred_gill_cover = classification(model_gill_cover_cls, org_gill_cover)
     else:
+        print("아가미뚜껑 추출 실패: 모델 출력 없음")
         pred_gill_cover = -1
     
     if org_intestine is not None:
         pred_intestine = classification(model_intestine_cls, org_intestine)
     else:
+        print("장 추출 실패: 모델 출력 없음")
         pred_intestine = -1
     
     if org_ascites is not None:        
         pred_ascites = classification(model_ascites_cls, org_ascites)
     else:
+        print("복수 추출 실패: 모델 출력 없음")
         pred_ascites = -1
 
     return compare(pred_gill, pred_liver, pred_gill_cover, pred_intestine, pred_ascites, pred_eye_90, pred_eyeless_90)

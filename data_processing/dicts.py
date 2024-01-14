@@ -52,21 +52,21 @@ class_side_0 = [ # both eye and eyeless
 
 class_eye_45_90 = [
     'DYH', # 체표 출혈
-    'DYU', # 체표 궤양
-    'DYA', # 체표 근육 출혈
     'FDH', # 등지느러미 출혈
     'FAH', # 뒷지느러미 출혈
     'FCH', # 꼬리지느러미 출혈
+    # 'DYA' # 체표 근육 출혈
+    #'DYU', # 체표 궤양
     #'MOU'  # 주둥이 궤양
 ]
 
 class_eyeless_45_90 = [
     'DYH', # 체표 출혈
-    'DYU', # 체표 궤양
-    'DYA', # 체표 근육 출혈
     'FDH', # 등지느러미 출혈
     'FAH', # 뒷지느러미 출혈
     'FCH', # 꼬리지느러미 출혈
+    # 'DYA' # 체표 근육 출혈
+    #'DYU', # 체표 궤양
     #'MOU',  # 주둥이 궤양
 ]
 

@@ -31,19 +31,19 @@ class AscitesSymptom(Enum):
 # 외부 유안측 증상
 class FRSymptom(Enum):
     DYH = 0 # 체표 출혈
-    DYU = 1 # 체표 궤양
-    DYA = 2 # 체표 근육 출혈
-    FDH = 3 # 등지느러미 출혈
-    FAH = 4 # 뒷지느러미 출혈
-    FCH = 5 # 꼬리지느러미 출혈
-    MOU = 6 # 주둥이 궤양
+    # DYU = 1 # 체표 궤양
+    # DYA = 2 # 체표 근육 출혈
+    FDH = 1 # 등지느러미 출혈
+    FAH = 2 # 뒷지느러미 출혈
+    FCH = 3 # 꼬리지느러미 출혈
+    # MOU = 6 # 주둥이 궤양
 
 # 외부 무안측 증상
 class RSSymptom(Enum):
     DYH = 0 # 체표 출혈
-    DYU = 1 # 체표 궤양
-    DYA = 2 # 체표 근육 출혈
-    FDH = 3 # 등지느러미 출혈
-    FAH = 4 # 뒷지느러미 출혈
-    FCH = 5 # 꼬리지느러미 출혈
-    MOU = 6 # 주둥이 궤양
+    # DYU = 1 # 체표 궤양
+    # DYA = 2 # 체표 근육 출혈
+    FDH = 1 # 등지느러미 출혈
+    FAH = 2 # 뒷지느러미 출혈
+    FCH = 3 # 꼬리지느러미 출혈
+    # MOU = 6 # 주둥이 궤양
